@@ -51,10 +51,14 @@ def get_eff_faker_err(y_pred, y_true):
 
 def train_test_split_by_part(X, y, pdgid, n_mu=2500, n_el=2500, n_had=2500, n_fake=2500):
     
-    mu_idx = sample_without_replacement(len(X[abs(pdgid)==13]),n_mu,random_state=23)
-    elec_idx = sample_without_replacement(len(X[abs(pdgid)==11]),n_el,random_state=23)
-    had_idx = sample_without_replacement(len(X[np.logical_and(abs(pdgid)>37,pdgid!=-999)]),n_had,random_state=23)
-    fake_idx = sample_without_replacement(len(X[pdgid==-999]),n_fake,random_state=23)
+    try:
+        mu_idx = sample_without_replacement(len(X[abs(pdgid)==13]),n_mu,random_state=23)
+        elec_idx = sample_without_replacement(len(X[abs(pdgid)==11]),n_el,random_state=23)
+        had_idx = sample_without_replacement(len(X[np.logical_and(abs(pdgid)>37,pdgid!=-999)]),n_had,random_state=23)
+        fake_idx = sample_without_replacement(len(X[pdgid==-999]),n_fake,random_state=23)
+    except:
+        print("Error: Not enough muons/electrons/hadrons/fakes in sample to create training data")
+        return [], [], [], [], [], []
     
     X_train = np.concatenate((X[abs(pdgid)==13][mu_idx],X[abs(pdgid)==11][elec_idx],\
                               X[np.logical_and(abs(pdgid)>37,pdgid!=-999)][had_idx],X[pdgid==-999][fake_idx]))
@@ -72,7 +76,14 @@ def train_test_split_by_part(X, y, pdgid, n_mu=2500, n_el=2500, n_had=2500, n_fa
     pdgid_test = np.concatenate((np.delete(pdgid[abs(pdgid)==13],mu_idx,axis=0),np.delete(pdgid[abs(pdgid)==11],elec_idx,axis=0),\
                                  np.delete(pdgid[np.logical_and(abs(pdgid)>37,pdgid!=-999)],had_idx,axis=0),\
                                  np.delete(pdgid[pdgid==-999],fake_idx,axis=0)))
-
+    
+    mu_check = (np.sum(abs(pdgid_test)==13)/np.sum(abs(pdgid)==13) < .2)
+    el_check = (np.sum(abs(pdgid_test)==11)/np.sum(abs(pdgid)==11) < .2)
+    had_check = (np.sum(pdgid_test==-999)/np.sum(pdgid==-999) < .2)
+    fake_check = (np.sum(np.logical_and(abs(pdgid_test)>37,pdgid_test!= -999))/np.sum(np.logical_and(abs(pdgid_test)>37,pdgid_test!= -999)) < .2)
+    if mu_check or el_check or had_check or fake_check:
+        print("Warning: The test set has less than 20% of muons/electrons/hadrons/fakes")
+    
     X_train,y_train,pdgid_train = shuffle(X_train,y_train,pdgid_train,random_state=23)
     X_test,y_test,pdgid_test = shuffle(X_test,y_test,pdgid_test,random_state=23)
     
