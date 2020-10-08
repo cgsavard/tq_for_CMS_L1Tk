@@ -21,6 +21,7 @@ Before running, you will need to install:
 4. uproot (https://pypi.org/project/uproot/)  
 5. xgboost (https://xgboost.readthedocs.io/en/release_0.72/build.html)
 6. QKeras (https://github.com/google/qkeras)
+
 *I suggest you install anaconda 
 (https://www.anaconda.com/distribution/) which will install
 all packages 1-3 necessary from python.
