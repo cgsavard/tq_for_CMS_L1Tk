@@ -10,6 +10,7 @@ for how to create a :
 - keras neural network (tq_NN.ipynb) 
 - QKeras neural network with weight pruning (tq_QNN.ipynb) 
 - scikit-learn or xgboost gradient-boosted decision tree (tq_GBDT.ipynb)
+
 Each example also includes how to evaluate these models, and then how
 to save them to file.
 
